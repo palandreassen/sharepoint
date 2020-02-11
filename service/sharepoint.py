@@ -4,6 +4,7 @@ from sesamutils.flask import serve
 import sys
 import msal
 import pem
+import json
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 import requests
@@ -29,7 +30,7 @@ def __init__(self, config):
         self.config = config
 
 
-def get_token()
+def get_token(self):
     cert = config["certificate"]
     client_credential = {"private_key": str(cert[0]),"thumbprint": config["cert_thumbprint"]}
     
@@ -46,11 +47,12 @@ def get_token()
     self.auth_token = result["access_token"]
 
 
-def get_entities(url)
+def __get_entities(self, site):
     if not self.session:
         self.session = requests.Session()
         self.get_token()
 
+    url = set_site_url(site) + "/_api/web"
     req = requests.Request("GET", url, headers={'accept': 'application/json;odata=nometadata', 'Authorization': 'Bearer ' + self.auth_token})
     try:
         resp = self.session.send(req.prepare())
@@ -66,6 +68,20 @@ def get_entities(url)
     return resp.json()
 
 
+def get_entities(self, site):
+    return self.__get_entities(site)
+
+
+def set_site_url(entity):
+    for k, v in entity.items():
+        if k.split(":")[-1] == "weburl":
+            siteurl = v
+            logger.info(siteurl)
+        else:
+            pass
+    return siteurl
+
+
 def stream_json(entities):
     first = True
     yield '['
@@ -78,14 +94,16 @@ def stream_json(entities):
     yield ']'
 
 
-@app.route("/<path:path>", methods=["GET"])
+@app.route("/<path:path>", methods=["POST"])
 def get(path):
 
-    url = path
-    logger.debug("url from path: " + str(url))
+    site = request.get_json()
+    logger.debug(site)
+    logger.debug(path)
 
-    entities = stream_json(self.get_entities(url))
-    return Response(entities, mimetype='application/json')
+    entities = get_entities(site)
+    return Response(stream_json(entities), mimetype='application/json')
+
 
 
 if __name__ == '__main__':

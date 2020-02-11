@@ -1,18 +1,14 @@
-FROM ubuntu:16.04
+FROM python:3.6-alpine
 MAINTAINER Pål Andreassen "pal.andreassen@sesam.io"
 COPY ./service /service
 
-RUN apt-get update
-RUN apt-get install -y build-essential
-RUN apt-get install -y python3
-RUN apt-get install -y python3-dev
-RUN apt-get install -y curl
-RUN apt-get install -y libssl-dev
+RUN apk update
+RUN apk add python-dev libxml2-dev libxslt-dev py-lxml musl-dev openssl-dev libffi-dev gcc
 
-RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python3
+RUN pip install --upgrade pip
 
-RUN pip3 install --upgrade pip
+RUN pip install -r /service/requirements.txt
 
-RUN pip3 install -r /service/requirements.txt
+EXPOSE 5000/tcp
 
-CMD ["python3", "-u", "./service/service.py"]
+CMD ["python3", "-u", "./service/sharepoint.py"]
