@@ -35,8 +35,7 @@ class data_access_layer:
 
 
     def get_token(self):
-        cert = config.certificate
-        client_credential = {"private_key": cert,"thumbprint": config.cert_thumbprint}
+        client_credential = {"private_key": config.certificate,"thumbprint": config.cert_thumbprint}
         
         try:
             app = msal.ConfidentialClientApplication(client_id=config.client_id, client_credential=client_credential, authority=config.token_url, validate_authority=True, token_cache=None, verify=True, proxies=None, timeout=None, client_claims=None, app_name=None, app_version=None)    
