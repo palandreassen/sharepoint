@@ -1,17 +1,12 @@
-FROM python:3-alpine
+FROM python:3.6
 MAINTAINER Pål Andreassen "pal.andreassen@sesam.io"
 COPY ./service /service
 
-RUN apk update
+WORKDIR /service
+ADD ./service/requirements.txt /service/requirements.txt
+RUN pip install -r requirements.txt
 
-RUN pip install --upgrade pip
-
-RUN apk --update add build-base libffi-dev libressl-dev python-dev py-pip
-RUN pip install cryptography
-
-COPY service/requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
-COPY ./service /service
+ADD . /service
 
 EXPOSE 5000/tcp
 
