@@ -84,7 +84,7 @@ class data_access_layer:
             if not resp.ok:
                 error_text = f"Unexpected response status code: {resp.status_code} with response text {resp.text}"
                 logger.error(error_text)
-                return resp
+                continue
 
             res = Dotdictify(resp.json())
             id_key = str("_id")
@@ -127,11 +127,8 @@ def get(path):
     entities = DAL.get_entities(sites)
     logger.debug(type(entities))
     logger.debug(entities)
-    if type(entities) is dict:
-        logger.debug(entities)
-        return Response(stream_json(entities), mimetype='application/json')
-    else:
-        return Response(entities, mimetype='application/json')
+
+    return Response(stream_json(entities), mimetype='application/json')
 
 
 if __name__ == '__main__':
